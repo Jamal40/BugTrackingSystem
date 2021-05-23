@@ -1,0 +1,61 @@
+﻿@model BugTrackingSystem.Models.Project
+
+@{
+    ViewData["Title"] = "Edit Project";
+    Layout = "_BootstrapLayout";
+}
+
+<h2>Edit</h2>
+
+<h4>Project</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProjectID" />
+            <div class="form-group">
+                <label asp-for="ProjectName" class="control-label"></label>
+                <input asp-for="ProjectName" class="form-control" />
+                <span asp-validation-for="ProjectName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ManagerID" class="control-label"></label>
+                <select asp-for="ManagerID" class="form-control" asp-items="ViewBag.ManagerID"></select>
+                <span asp-validation-for="ManagerID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input data-manager="@Model.ManagerID" id="edit-project-btn" type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+@section Scripts {
+    <script>
+        const editProjectButton = document.querySelector("#edit-project-btn");
+        const originalProjectManagerId = editProjectButton.getAttribute("data-manager");
+
+        "use strict";
+        var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+        connection.start().then(() => { console.log("Connection has been successfully started.") });
+
+        editProjectButton.addEventListener("click", (e) => {
+            let newManagerId = Array.from(document.querySelectorAll("option")).filter(opt => opt.selected === true)[0].value;
+            if (newManagerId !== originalProjectManagerId) {
+                connection.invoke("DeveloperFire", "You have been assigned as a manager to a @Model.ProjectName.", `/project/details/@Model.ProjectID`, newManagerId);
+            }
+            else {
+                connection.invoke("DeveloperFire", "The project @Model.ProjectName you manage has been modified.", `/project/details/@Model.ProjectID`, newManagerId);
+            }
+
+        })
+
+    </script>
+}
+

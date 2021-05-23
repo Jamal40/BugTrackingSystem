@@ -1,0 +1,64 @@
+﻿@model IEnumerable<BugTrackingSystem.Models.Ticket>
+
+@{
+    ViewData["Title"] = "Tickets List";
+    Layout = "_BootstrapLayout";
+}
+
+
+<div class="">
+    <div class="page-title">
+        <div class="title_left">
+            <h3>Tickets</h3>
+            <p>
+                <a class="btn btn-outline-success" asp-action="Create">Create New</a>
+            </p>
+
+        </div>
+
+        <form method="get">
+            <div class="title_right">
+                <div class="col-md-5 col-sm-5 form-group pull-right top_search">
+                    <div class="input-group">
+
+                        <input name="searchText" type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Go!</button>
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="x_panel">
+            <div class="x_content">
+                <div class="col-md-12 col-sm-12  text-center">
+
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="card-columns">
+                    <!-- Repeated Part -->
+                    @foreach (Ticket ticket in Model)
+                    {
+                        <div class="card col-12">
+                            <div class="card-body">
+                                <p class="card-title text-info">Project: @ticket.Project.ProjectName</p>
+                                <p class="card-subtitle mb-2 text-muted">By: @ticket.Submitter.Name</p>
+                                <h6 class="card-text">@ticket.Description</h6>
+                                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@ticket.TicketID">Edit</a>
+                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@ticket.TicketID">Delete</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

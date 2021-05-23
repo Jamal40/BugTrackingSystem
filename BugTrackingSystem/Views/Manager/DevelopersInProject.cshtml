@@ -1,0 +1,147 @@
+﻿@model Project
+@{
+    Layout = "_BootstrapLayout";
+    ViewData["title"] = "Develpers In Project";
+
+    List<BugTrackerUser> FreeDevelopers = ViewBag.AllDevelopers;
+    List<BugTrackerUser> ExistingDevelopers = ViewBag.ExistingDevelopers;
+}
+
+<h3 class="mb-5">Assigning Developers To The Current Project</h3>
+<div class="d-flex justify-content-around">
+    @*<div class="d-block m-auto col-5">
+            <h4>Free Developers</h4>
+            <form class="d-block m-auto" asp-action="AssignDevelopersToProject" method="post">
+                @foreach (var developer in FreeDevelopers)
+                {
+                    <input class="free-devs-box" type="checkbox" id="@developer.BugTrackerUserID" value="@developer.BugTrackerUserID" />
+                    <label for="@developer.BugTrackerUserID">@developer.Name</label>
+                    <br />
+                }
+                <input type="hidden" name="newdevs" value="">
+                <input class="btn btn-success" type="button" onclick="CollectIDsAndSubmit()" value="Assign" />
+            </form>
+        </div>
+        <div class="d-block m-auto col-5">
+            <h4>Existing Developers</h4>
+            <form class="d-block remove-form m-auto" asp-action="RemoveDevelopersFromProject" method="post">
+                @foreach (var developer in ExistingDevelopers)
+                {
+                    <input class="existing-devs-box" type="checkbox" id="@developer.BugTrackerUserID" value="@developer.BugTrackerUserID" />
+                    <label for="@developer.BugTrackerUserID">@developer.Name</label>
+                    <br />
+                }
+                <input type="hidden" name="removed_devs" value="">
+                <input class="btn btn-danger" type="button" onclick="CollectIDsAndSubmitToRemovalAction()" value="Assign" />
+            </form>
+        </div>*@
+
+
+</div>
+
+
+<div class="col-md-6 col-sm-6  ">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Free Developers</h2>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+
+            <div class="">
+                <div class="">
+                    <h4>Free Developers</h4>
+                    <form class="d-block" asp-action="AssignDevelopersToProject" method="post">
+                        @foreach (var developer in FreeDevelopers)
+                        {
+                            <input class="free-devs-box " type="checkbox" id="@developer.BugTrackerUserID" value="@developer.BugTrackerUserID" />
+                            <label for="@developer.BugTrackerUserID">@developer.Name</label>
+                            <br />
+                        }
+                        <input type="hidden" name="newdevs" value="">
+                        <input class="btn btn-success" type="button" onclick="CollectIDsAndSubmit()" value="Assign" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 col-sm-6  ">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Existing Developers</h2>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+
+            <div class="">
+                <div class="d-block">
+                    <h4>Existing Developers</h4>
+                    <form class="d-block remove-form m-auto" asp-action="RemoveDevelopersFromProject" method="post">
+                        @foreach (var developer in ExistingDevelopers)
+                        {
+                            <input class="existing-devs-box" type="checkbox" id="@developer.BugTrackerUserID" value="@developer.BugTrackerUserID" />
+                            <label for="@developer.BugTrackerUserID">@developer.Name</label>
+                            <br />
+                        }
+                        <input type="hidden" name="removed_devs" value="">
+                        <input class="btn btn-danger" type="button" onclick="CollectIDsAndSubmitToRemovalAction()" value="Remove" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+        "use strict";
+        var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+        connection.start().then(() => { console.log("Connection has been successfully started.") })
+
+        const form = document.querySelector("form");
+        const removeForm = document.querySelector(".remove-form");
+
+        const mainInput = document.querySelector("input[name = 'newdevs']");
+        const mainRemovalInput = document.querySelector("input[name = 'removed_devs']");
+
+        function CollectIDsAndSubmit() {
+            const checkBoxes = document.querySelectorAll(".free-devs-box");
+            let developersIDs = '';
+            for (let i = 0; i < checkBoxes.length; i++) {
+                if (checkBoxes[i].checked) {
+                    developersIDs += checkBoxes[i].value + "_";
+                }
+            }
+            mainInput.value = developersIDs;
+
+            for (const devId of developersIDs.split("_")) {
+                connection.invoke("DeveloperFire", "You have been assigned to a project", "#", devId);
+            }
+
+            form.submit();
+        }
+
+        function CollectIDsAndSubmitToRemovalAction() {
+            const checkBoxes = document.querySelectorAll(".existing-devs-box");
+            let developersIDs = '';
+            for (let i = 0; i < checkBoxes.length; i++) {
+                if (checkBoxes[i].checked) {
+                    developersIDs += checkBoxes[i].value + "_";
+                }
+            }
+            mainRemovalInput.value = developersIDs;
+
+            for (const devId of developersIDs.split("_")) {
+                connection.invoke("DeveloperFire", "You have been removed form the project", "#", devId);
+            }
+
+            removeForm.submit();
+        }
+    </script>
+}

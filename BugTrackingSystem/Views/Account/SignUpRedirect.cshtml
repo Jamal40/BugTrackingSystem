@@ -1,0 +1,48 @@
+﻿@model BugTrackerUser
+@{
+    Layout = "";
+    string state = ViewBag.state;
+    ViewData["title"] = "SignUp";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BugTrackingSystem</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body style="background-color: #F7F7F7;">
+    <div class="w-75 m-auto">
+    <h2 class="mt-5 text-center">Sign-up Redirect Page</h2>
+        <form asp-action="SignUpRedirect" method="post" class="m-auto">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BugTrackerUserID" class="control-label"></label>
+                <input asp-for="BugTrackerUserID" name="BugTrackerUserID" class="form-control" readonly />
+                <span asp-validation-for="BugTrackerUserID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" name="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" name="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <input type="hidden" name="state" value="@state" />
+            <div class="form-group text-center">
+                <input type="submit" value="Create" class="btn btn-info" />
+            </div>
+        </form>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

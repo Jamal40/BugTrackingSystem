@@ -1,0 +1,211 @@
+﻿@model IEnumerable<BugTrackingSystem.Models.Ticket>
+
+@{
+    ViewData["Title"] = "Tickets List";
+    Layout = "_BootstrapLayout";
+    string OpenClass = "border-dark";
+    string InProgressClass = "border-info";
+    string StrugglingClass = "border-danger";
+    string CompletedClass = "border-success";
+    string OpenClassText = "text-dark";
+    string InProgressClassText = "text-info";
+    string StrugglingClassText = "text-danger";
+    string CompletedClassText = "text-success";
+    string choosenClass = "";
+    string choosenClassText = "";
+}
+
+
+<div class="">
+    <div class="page-title">
+        <div class="title_left">
+            <h3>Tickets</h3>
+            <p>
+                <a class="btn btn-outline-success" asp-action="Create">Create New</a>
+            </p>
+
+        </div>
+
+        <form method="get">
+            <div class="title_right">
+                <div class="col-md-5 col-sm-5 form-group pull-right top_search">
+                    <div class="input-group">
+
+                        <input name="searchText" type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Go!</button>
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="x_panel">
+            <div class="x_content">
+                <div class="col-md-12 col-sm-12  text-center">
+
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="card-columns">
+                    <!-- Repeated Part -->
+                    @foreach (Ticket ticket in Model)
+                    {
+
+                        choosenClass = ticket.Status switch
+                        {
+                            StatusType.Open => OpenClass,
+                            StatusType.Complete => CompletedClass,
+                            StatusType.InProgress => InProgressClass,
+                            StatusType.Struggling => StrugglingClass,
+                            _ => OpenClass
+                        };
+
+                        choosenClassText = ticket.Status switch
+                        {
+                            StatusType.Open => OpenClassText,
+                            StatusType.Complete => CompletedClassText,
+                            StatusType.InProgress => InProgressClassText,
+                            StatusType.Struggling => StrugglingClassText,
+                            _ => OpenClassText
+                        };
+
+
+                        <div style="border-width:7px !important;" class="card @choosenClass col-12">
+                            <div class="card-body">
+                                <p class="card-title ">Project: @ticket.Project.ProjectName</p>
+                                <p class="card-subtitle mb-2 text-muted">By: @ticket.Submitter.Name</p>
+                                <h6 class="card-text @choosenClassText">@ticket.Description</h6>
+                                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@ticket.TicketID">Edit</a>
+                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@ticket.TicketID">Delete</a>
+
+                                <!-- Collapsible parts-->
+                                <br />
+
+                                <p class="mb-0">
+                                    <a class="btn btn-light btn-sm" data-toggle="collapse" href="@("#s1"+ticket.TicketID)" role="button" aria-expanded="false" aria-controls="@("s1"+ticket.TicketID)">Assign To a Developer</a>
+                                </p>
+                                <p class="mb-0">
+                                    <a class="btn btn-light btn-sm" data-toggle="collapse" href="@("#st1"+ticket.TicketID)" role="button" aria-expanded="false" aria-controls="@("st1"+ticket.TicketID)">Change Status</a>
+                                </p>
+                                <p class="mb-0">
+                                    <a class="btn btn-light btn-sm" data-toggle="collapse" href="@("#p1"+ticket.TicketID)" role="button" aria-expanded="false" aria-controls="@("p1"+ticket.TicketID)">Change Priority</a>
+                                </p>
+                                <div class="row mt-2">
+                                    <div class="w-100">
+                                        <div class="collapse multi-collapse" id="@("s1"+ticket.TicketID)">
+                                            <div class="card card-body p-1">
+                                                <form class="" asp-action="AssigneTicketToDeveloper" method="post">
+                                                    <div class="form-group row">
+                                                        <label for="colFormLabelSm" class="col-sm-5 col-form-label col-form-label-sm">Developer</label>
+                                                        <div class="col-sm-10">
+                                                            <select name="DeveloperID" class="form-control form-control-sm">
+                                                                <option class="" selected="@(ticket.DeveloperID==null)">
+                                                                    None
+                                                                </option>
+                                                                @foreach (BugTrackerUser developer in ticket.Project.Developers)
+                                                                {
+                                                                    <option data-ticket="@ticket.TicketID" value="@developer.BugTrackerUserID" selected="@(ticket.DeveloperID == developer.BugTrackerUserID)">@developer.Name</option>
+                                                                }
+                                                            </select>
+                                                            <input type="hidden" value="@ticket.TicketID" name="TicketID" />
+                                                            <button type="submit" data-developer="@ticket.DeveloperID" data-ticket="@ticket.TicketID"  class="btn btn-outline-secondary mt-2 assign-to-developer-button">Confirm</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="collapse multi-collapse" id="@("st1"+ticket.TicketID)">
+                                            <div class="card card-body p-1">
+                                                <form class="" asp-action="ChangeTicketStatus" method="post">
+                                                    <div class="form-group row">
+                                                        <label for="colFormLabelSm" class="col-sm-5 col-form-label col-form-label-sm">Status</label>
+                                                        <div class="col-sm-10">
+                                                            <select name="Status" class="form-control form-control-sm">
+                                                                <option class="" value="3" selected="@(ticket.Status == StatusType.Complete)">
+                                                                    Compelte
+                                                                </option>
+                                                                <option class="" value="1" selected="@(ticket.Status == StatusType.InProgress)">
+                                                                    In Progress
+                                                                </option>
+                                                                <option class="" value="2" selected="@(ticket.Status == StatusType.Struggling)">
+                                                                    Struggling
+                                                                </option>
+                                                                <option class="" value="2" selected="@(ticket.Status == StatusType.Open)">
+                                                                    Open
+                                                                </option>
+                                                            </select>
+                                                            <input type="hidden" value="@ticket.TicketID" name="TicketID" />
+                                                            <button type="submit" class="btn btn-outline-secondary mt-2">Confirm</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="collapse multi-collapse" id="@("p1"+ticket.TicketID)">
+                                            <div class="card card-body p-1">
+                                                <form class="" asp-action="ChangeTicketPriority" method="post">
+                                                    <div class="form-group row">
+                                                        <label for="colFormLabelSm" class="col-sm-5 col-form-label col-form-label-sm">Priority</label>
+                                                        <div class="col-sm-10">
+                                                            <select name="Priority" class="form-control form-control-sm">
+                                                                <option class="" value="0" selected="@(ticket.Priority == PriorityType.Low)">
+                                                                    Low
+                                                                </option>
+                                                                <option class="" value="1" selected="@(ticket.Priority == PriorityType.Moderate)">
+                                                                    Moderate
+                                                                </option>
+                                                                <option class="" value="2" selected="@(ticket.Priority == PriorityType.High)">
+                                                                    High
+                                                                </option>
+                                                                <option class="" value="3" selected="@(ticket.Priority == PriorityType.Extreme)">
+                                                                    Extreme
+                                                                </option>
+                                                            </select>
+                                                            <input type="hidden" value="@ticket.TicketID" name="TicketID" />
+                                                            <button type="submit" class="btn btn-outline-secondary mt-2">Confirm</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        const assignToDeveloperButtons = document.querySelectorAll(".assign-to-developer-button");
+        "use strict";
+        var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+        connection.start().then(() => { console.log("Connection has been successfully started.") });
+
+        for (let btn of assignToDeveloperButtons) {
+            btn.addEventListener("click", function (e) {
+
+                let ticketId = e.target.getAttribute("data-ticket");
+                let developerId = Array.from(document.querySelectorAll(`option[data-ticket="${ticketId}"]`)).filter(o => o.selected === true)[0].value;
+                console.log(`Developer Id = ${developerId} and the ticketId = ${ticketId}`)
+                connection.invoke("DeveloperFire", "A ticket has been assigned to you.", `/ticket`, developerId);
+                
+            })
+        }
+    </script>
+}

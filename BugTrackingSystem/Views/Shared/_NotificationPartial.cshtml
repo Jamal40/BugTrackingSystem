@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject UserRepo userRepo
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    var id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+    var CurrentUser = userRepo.GetUserByID_IncludeNotifications(id);
+
+    <li role="presentation" class="nav-item dropdown open">
+        <a href="javascript:;" class="dropdown-toggle info-number" id="navbarDropdown1" data-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-envelope-o"></i>
+            <span id="notifications-count" class="badge bg-green">@CurrentUser.Notifications.Count()</span>
+        </a>
+        <ul id="drop-down-notification" class="dropdown-menu list-unstyled msg_list" role="menu" aria-labelledby="navbarDropdown1">
+            @foreach (var item in CurrentUser.Notifications)
+            {
+                <li class="nav-item">
+                    <a class="dropdown-item" href="@item.Link">
+                        <span class="message">
+                            @item.Message
+                        </span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </li>
+}

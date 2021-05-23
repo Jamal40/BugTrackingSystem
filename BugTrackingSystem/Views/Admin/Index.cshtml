@@ -1,0 +1,46 @@
+﻿@model IEnumerable<BugTrackingSystem.Models.BugTrackerUser>
+
+@{
+    Layout = "_BootstrapLayout";
+    ViewData["Title"] = "Index";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Age)
+            </th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Age)
+                </td>
+                <td>
+                    @user.Role?.Name
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.BugTrackerUserID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@user.BugTrackerUserID">Details</a> |
+                    @if (user.BugTrackerUserID != User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value)
+                    {
+                        <a asp-action="Delete" asp-route-id="@user.BugTrackerUserID">Delete</a>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
