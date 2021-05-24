@@ -20,5 +20,5 @@ A bug tracking system that manages the work between four roles (Admin, Manager, 
 - Can submit tickets.
 - Only able to view his/her tickets
  
-Detailed demo:
-https://lnkd.in/dhViy8K
+Demo:
+https://drive.google.com/file/d/1SuJFwhJgyEQD42dAQR4nBL096J4er2ki/view
